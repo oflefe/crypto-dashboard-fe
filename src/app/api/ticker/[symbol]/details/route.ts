@@ -4,7 +4,7 @@ export async function GET(
   request: Request,
   { params }: { params: { symbol: string } }
 ) {
-  const { symbol } = params;
+  const { symbol } = await params;
 
   try {
     const response = await fetch(

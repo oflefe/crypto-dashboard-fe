@@ -3,6 +3,36 @@
 import { useEffect, useState } from "react";
 import { connectSocket } from "../../../utils/socket";
 import { useParams } from "next/navigation";
+import "../../../styles/details.css";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+interface HistoricalDataPoint {
+  time: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+}
 
 interface SymbolDetails {
   symbol: string;
@@ -15,6 +45,9 @@ interface SymbolDetails {
 
 export default function DetailsPage() {
   const [details, setDetails] = useState<SymbolDetails | null>(null);
+  const [historicalData, setHistoricalData] = useState<HistoricalDataPoint[]>(
+    []
+  );
   const params = useParams<{ symbol: string }>();
 
   const fetchSymbolDetails = async (symbol: string) => {
@@ -34,9 +67,20 @@ export default function DetailsPage() {
     }
   };
 
+  const fetchHistoricalData = async (symbol: string) => {
+    try {
+      const response = await fetch(`/api/ticker/${symbol}/history`);
+      const data = await response.json();
+      setHistoricalData(data);
+    } catch (error) {
+      console.error("Error fetching historical data:", error);
+    }
+  };
+
   useEffect(() => {
     const initialize = async () => {
       await fetchSymbolDetails(params.symbol);
+      await fetchHistoricalData(params.symbol);
       const socket = connectSocket();
       socket.emit("joinSymbolDetails", params.symbol);
       socket.on("symbolDetailsUpdate", (data: SymbolDetails) => {
@@ -55,6 +99,26 @@ export default function DetailsPage() {
   if (!details) {
     return <p>Loading details...</p>;
   }
+
+  const chartData = {
+    labels: historicalData.map((point) => point.time),
+    datasets: [
+      {
+        label: "Close Price",
+        data: historicalData.map((point) => point.close),
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: { position: "top" as const },
+      title: { display: true, text: `1-Month History (${params.symbol})` },
+    },
+  };
 
   return (
     <main>
@@ -87,6 +151,10 @@ export default function DetailsPage() {
           </tr>
         </tbody>
       </table>
+      <h1>{params.symbol} Historical Chart</h1>
+      <div style={{ marginTop: "30px", height: "600px", width: "1200px" }}>
+        <Line data={chartData} options={chartOptions} />
+      </div>
     </main>
   );
 }

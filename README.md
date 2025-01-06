@@ -1,36 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+Frontend for Crypto Dashboard
+Overview
+This project is the frontend implementation for the Crypto Dashboard. It interacts with the backend to provide real-time updates for cryptocurrency prices, user subscriptions, and historical charts for specific trading pairs.
 
-First, run the development server:
+Features
+User Dashboard:
+Login and registration functionality.
+View and manage subscribed trading pairs.
+Navigate to details of specific trading pairs.
+Details Page:
+Real-time price updates.
+One-month historical chart using Binance API data.
+Responsive Design:
+Optimized for both desktop and mobile views.
+How the Code Works
+1. React Client Components
+The application uses React client components for dynamic UI updates:
 
-```bash
+User Dashboard (/user):
+Displays user subscriptions and real-time price updates.
+Allows adding pairs and navigating to their details.
+Details Page (/details/[symbol]):
+Fetches details for a specific trading pair.
+Displays a historical chart and live updates for the selected pair.
+2. API Interaction
+The frontend communicates with the backend via RESTful API endpoints:
+
+User Endpoints:
+/api/users/login: Login functionality.
+/api/users/register: Registration endpoint.
+/api/users/[id]/subscriptions: Fetch subscribed pairs.
+/api/users/[id]/subscribe: Subscribe to a new pair.
+Ticker Endpoints:
+/api/ticker/[symbol]/details: Fetch live symbol details.
+/api/ticker/[symbol]/history: Fetch historical data for charts.
+3. WebSocket Integration
+WebSocket connections are established for:
+
+Real-time price updates for user subscriptions on the dashboard.
+Live updates for details pages to ensure up-to-date information.
+4. Chart Integration
+The Chart.js library is used to render historical data visually. It is configured for:
+
+Custom dimensions for smaller charts.
+Responsive layout for varying screen sizes.
+Setup and Running the Project
+1. Prerequisites
+Node.js (version 14 or later)
+npm or yarn
+2. Install Dependencies
+Clone the repository and install dependencies:
+
+bash
+Copy code
+git clone <repo-url>
+cd frontend
+npm install
+3. Configure Environment Variables
+Create a .env.local file in the project root and add the following:
+
+bash
+Copy code
+NEXT_PUBLIC_BACKEND_URL=http://localhost:3000
+4. Start the Development Server
+Run the following command:
+
+bash
+Copy code
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Visit the application at http://localhost:3001.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Build for Production
+To create a production build:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+bash
+Copy code
+npm run build
+npm start
+Design Decisions and Key Considerations
+1. Dynamic Routing
+The application uses Next.js' dynamic routing (/details/[symbol]) for navigating to specific trading pairs.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Real-Time Updates
+WebSocket connections ensure real-time updates for:
 
-## Learn More
+User subscriptions (e.g., price changes).
+Symbol details pages.
+3. Historical Chart Implementation
+Historical data is fetched statically on page load to simplify implementation and reduce WebSocket complexity. The chart dynamically adjusts its size for better user experience.
 
-To learn more about Next.js, take a look at the following resources:
+4. User Experience
+Clear navigation for managing subscriptions and viewing details.
+Visual feedback for real-time updates (e.g., flashing rows for price changes).
+5. Scalability
+The separation of frontend and backend ensures modularity:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The frontend focuses on UI rendering and user interactions.
+The backend handles API requests, database interactions, and WebSocket connections.
+Future Enhancements
+Advanced Charting:
+Add more interactive features to charts (e.g., tooltips, zooming).
+Push Notifications:
+Notify users of significant price changes even when not actively viewing the dashboard.
+Enhanced Error Handling:
+Improve user feedback for network errors or failed API requests.

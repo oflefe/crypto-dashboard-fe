@@ -33,6 +33,13 @@ export const connectSocket = (): Socket => {
   return socket;
 };
 
+
+export const disconnectSocket = () => {
+    if(socket){
+        socket.disconnect()
+    }
+}
+
 /**
  * Returns the existing WebSocket connection.
  * Throws an error if the socket is not connected.
